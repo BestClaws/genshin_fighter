@@ -1,0 +1,10 @@
+[package]
+name = "genshin_fighter"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = { version = "0.7.0", features = ["dynamic"] }
+rand="0.8.5"
+bevy-inspector-egui = "0.11.0"
+#bevy_rapier2d = { version = "*", features = [ "simd-stable", "debug-render" ] }
