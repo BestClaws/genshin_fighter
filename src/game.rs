@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use crate::battle::BattlePlugin;
+use crate::battle::{BattlePlugin, BattleState};
 
 
 /// represents the entire game as a whole
@@ -15,8 +15,10 @@ impl Plugin for GamePlugin {
 }
 
 
-fn setup() {
 
+fn setup(mut state: ResMut<State<BattleState>>) {
+    info!("setup(): will just load battle for u");
+    state.set(BattleState::Loading).unwrap();
 }
 
 
