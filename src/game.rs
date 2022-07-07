@@ -1,15 +1,22 @@
 use bevy::prelude::*;
-use crate::domain::DomainPlugin;
+use crate::battle::BattlePlugin;
 
-/// represents the stage where the battle happens
+
+/// represents the entire game as a whole
+/// manages different screens in the game like menu, battle etc.,
 pub struct GamePlugin;
 
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
-        info!("GamePlugin build...");
-        app.add_plugin(DomainPlugin);
+        app.add_plugin(BattlePlugin).add_startup_system(setup);
+        info!("plugin ready...");
 
     }
+}
+
+
+fn setup() {
+
 }
 
 

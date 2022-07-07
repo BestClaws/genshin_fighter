@@ -1,12 +1,13 @@
-mod game;
-mod domain;
-mod asset_library;
+/* bootstraps the game */
 
-use crate::game::GamePlugin;
+mod battle;
+mod domain;
+mod game;
 
 use bevy::prelude::*;
 use bevy_inspector_egui::WorldInspectorPlugin;
 
+use crate::game::GamePlugin;
 
 fn main() {
     App::new()
@@ -21,6 +22,3 @@ fn main() {
         .add_plugin(WorldInspectorPlugin::default())
         .run();
 }
-
-
-

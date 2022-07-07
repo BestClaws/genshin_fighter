@@ -1,8 +1,8 @@
+use crate::domain::DomainState::Loading;
 use bevy::prelude::*;
 use bevy_asset_loader::{AssetCollection, AssetLoader};
 
-/// represents the stage where the battle happens
-pub struct DomainPlugin;
+/// represents the arena where the battle happens
 
 #[derive(AssetCollection)]
 struct ImageAssets {
@@ -10,20 +10,34 @@ struct ImageAssets {
     bg: Handle<Image>,
 }
 
-struct AssetsLoading(Vec<HandleUntyped>);
+#[derive(Copy, Clone, PartialEq, Eq, Debug, Hash)]
+enum DomainState {
+    Unloaded,
+    Loading,
+    Loaded,
+}
+
+pub struct DomainPlugin;
 
 impl Plugin for DomainPlugin {
     fn build(&self, app: &mut App) {
-        info!("DomainPlugin Build...");
-
         // setup asset loader
         AssetLoader::new(DomainState::Loading)
             .continue_to_state(DomainState::Loaded)
             .with_collection::<ImageAssets>()
             .build(app);
+
         // todo: stay unloaded, game should set this state to loading instead.
         app.add_state(DomainState::Loading)
+            .add_system_set(
+                SystemSet::on_enter(DomainState::Loading).with_system(show_loading_system),
+            )
+            .add_system_set(
+                SystemSet::on_exit(DomainState::Loading).with_system(end_loading_system),
+            )
             .add_system_set(SystemSet::on_enter(DomainState::Loaded).with_system(setup_system));
+
+        info!("plugin ready...");
     }
 }
 
@@ -48,7 +62,6 @@ fn setup_system(
     let bg_size = image_assets.get(&loaded_images.bg).unwrap().size();
     info!("Got bg size: {:?}", bg_size);
 
-
     // find bg scale factor
     // todo: (surely the logic isnt right. fix this later)
     bg_scale_factor = if win.width() > win.height() {
@@ -69,10 +82,32 @@ fn setup_system(
     });
 }
 
-#[derive(Copy, Clone, PartialEq, Eq, Debug, Hash)]
-enum DomainState {
-    Unloaded,
-    Loading,
-    Loaded,
+fn show_loading_system(mut commands: Commands) {
+    info!("showing loading screen");
+
+    // todo: this should be a ui camera instead, also despawn these components when done loading.
+    // spawn the camera.
+    commands
+        .spawn_bundle(OrthographicCameraBundle::new_2d())
+        .insert(LoadingScreenItem);
+
+    commands
+        .spawn_bundle(SpriteBundle {
+            sprite: Sprite {
+                color: Color::GREEN,
+                ..default()
+            },
+            transform: Transform::from_scale(Vec3::new(10., 10., 10.)),
+            ..default()
+        })
+        .insert(LoadingScreenItem);
 }
 
+fn end_loading_system(mut commands: Commands, query: Query<Entity, With<LoadingScreenItem>>) {
+    for ent in query.iter() {
+        commands.entity(ent).despawn();
+    }
+}
+
+#[derive(Component)]
+struct LoadingScreenItem;
