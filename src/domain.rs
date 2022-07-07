@@ -1,19 +1,18 @@
 use bevy::prelude::*;
 use bevy_asset_loader::{AssetCollection, AssetLoader};
 
-/// represents the arena where the battle happens
-#[derive(AssetCollection)]
-struct ImageAssets {
-    #[asset(path = "zhou.png")]
-    bg: Handle<Image>,
+
+
+
+
+pub struct DomainPlugin;
+
+impl Plugin for DomainPlugin {
+    fn build(&self, app: &mut App) {
+        info!("plugin ready...");
+    }
 }
 
-#[derive(Copy, Clone, PartialEq, Eq, Debug, Hash)]
-enum DomainState {
-    Unloaded,
-    Loading,
-    Loaded,
-}
 
 
 #[derive(AssetCollection)]
@@ -23,35 +22,13 @@ pub struct DomainAssets {
 }
 
 
-pub struct DomainPlugin;
-
-impl Plugin for DomainPlugin {
-    fn build(&self, app: &mut App) {
-
-        // setup asset loader
-        AssetLoader::new(DomainState::Loading)
-            .continue_to_state(DomainState::Loaded)
-            .with_collection::<ImageAssets>()
-            .build(app);
-
-        app.add_state(DomainState::Loading);
-
-        
-
-        info!("plugin ready...");
-    }
-}
-
-
-
+// spawn the domain bg, platforms etc.,
 pub fn spawn_domain_sys(
-    mut commands: Commands,
+    commands: &mut Commands,
     windows: Res<Windows>,
     loaded_images: Res<DomainAssets>,
     image_assets: Res<Assets<Image>>,
 ) {
-    // spawn the camera.
-    commands.spawn_bundle(OrthographicCameraBundle::new_2d());
 
     // load bg image
     // only image for now. (future: image > animated image > dynamic sfx maybe?)
