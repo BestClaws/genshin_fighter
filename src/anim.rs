@@ -1,26 +1,28 @@
 use bevy::prelude::*;
-use std::time::Duration;
 
-#[derive(Debug)]
-struct Animation {
-    current_frame: usize,
-    /// frame delays in (ms)
+#[derive(Component, Debug)]
+pub struct Animation {
+    /// the offset in sprite sheet
+    sheet_offset: u32,
+    pub current_frame: usize,
+    /// frame delays (ms)
     frame_delays: Vec<i32>,
     elapsed: u32,
     total_duration: u32,
 }
 
 impl Animation {
-    fn from(frame_delays_ms: Vec<i32>) -> Self {
+    pub fn from(sheet_offset: u32, frame_delays_ms: Vec<i32>) -> Self {
         let current_frame = 0;
         let elapsed = 0;
 
         let total_duration = frame_delays_ms
             .iter()
-            .map(|e| e.abs())
+            // .map(|e| e.abs())
             .sum::<i32>() as u32;
 
         Self {
+            sheet_offset,
             current_frame,
             frame_delays: frame_delays_ms,
             elapsed,
@@ -28,13 +30,17 @@ impl Animation {
         }
     }
 
-    fn advance(&mut self, adv_ms: u32) {
-
+    /// advances the animation by given (ms)
+    pub fn advance(&mut self, adv_ms: u32) {
         let abs_advance = self.elapsed + adv_ms;
         let mut offset_adv = abs_advance % self.total_duration;
 
         self.elapsed = offset_adv;
+
+        info!("self.elapsed: {}", self.elapsed);
+
         self.current_frame = 0;
+
 
         let mut frame_delays_itr = self.frame_delays.iter();
 
@@ -47,14 +53,18 @@ impl Animation {
                 break;
             }
         }
+
+        info!("elpased after advance: {}", self.elapsed);
+    }
+
+    pub fn reset(&mut self) {
+
+        self.current_frame = 0;
+        self.elapsed = 0;
     }
 }
 
 
-#[derive(Bundle)]
-pub struct AnimatedSpriteSheetBundle {
-    #[bundle]
-    sprite_sheet_bundle: SpriteSheetBundle,
-}
+
 
 fn anim(anim: Animation) {}

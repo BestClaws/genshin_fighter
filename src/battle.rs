@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use bevy_asset_loader::{AssetLoader};
 
 use crate::domain::DomainAssets;
-use crate::player::{spawn_player_sys, PlayerAssets, PlayerPlugin};
+use crate::player::{spawn_player, PlayerAssets, PlayerPlugin};
 
 /// represents the stage where the battle happens
 pub struct BattlePlugin;
@@ -82,6 +82,7 @@ fn spawn_all(
     domain_assets: Res<DomainAssets>,
     player_assets: Res<PlayerAssets>,
     image_assets: Res<Assets<Image>>,
+    atlas_assets: ResMut<Assets<TextureAtlas>>,
 ) {
     info!("loading finished, spawning entities");
 
@@ -90,7 +91,7 @@ fn spawn_all(
     // spawn the domain
     spawn_domain_sys(&mut commands, windows, domain_assets, image_assets);
     // spawn the player
-    spawn_player_sys(&mut commands, player_assets);
+    spawn_player(&mut commands, player_assets, atlas_assets);
 }
 
 #[derive(Component)]
