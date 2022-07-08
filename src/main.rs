@@ -4,6 +4,7 @@ mod battle;
 mod domain;
 mod game;
 mod player;
+mod anim;
 
 use bevy::prelude::*;
 use bevy_inspector_egui::WorldInspectorPlugin;

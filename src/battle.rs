@@ -1,15 +1,19 @@
 use crate::domain::{spawn_domain_sys, DomainPlugin};
 use bevy::prelude::*;
-use bevy_asset_loader::{AssetCollection, AssetLoader};
+use bevy_asset_loader::{AssetLoader};
 
 use crate::domain::DomainAssets;
-use crate::player::{spawn_player_sys, PlayerAssets};
+use crate::player::{spawn_player_sys, PlayerAssets, PlayerPlugin};
 
 /// represents the stage where the battle happens
 pub struct BattlePlugin;
 
 impl Plugin for BattlePlugin {
     fn build(&self, app: &mut App) {
+
+        // link plugins
+        app.add_plugin(PlayerPlugin).add_plugin(DomainPlugin);
+
         // don't load battle screen until game says so.
         app.add_state(BattleState::Unloaded);
 
@@ -20,8 +24,7 @@ impl Plugin for BattlePlugin {
             .with_collection::<PlayerAssets>()
             .build(app);
 
-        // app.add_plugin(DomainPlugin).add_startup_system(setup);
-
+        // add conditional systems.
         app.add_system_set(
             SystemSet::on_enter(BattleState::Loading).with_system(beg_load_screen_sys),
         );
@@ -43,16 +46,13 @@ pub enum BattleState {
     End,
 }
 
-fn setup() {}
 
-fn show_loading_system() {
-    info!("now loading assets");
-}
+
 
 fn beg_load_screen_sys(mut commands: Commands) {
     info!("showing loading screen");
 
-    // todo: this should be a ui camera instead, also despawn these components when done loading.
+    // todo: this should be a ui camera instead, also de-spawn these components when done loading.
     // spawn the camera.
     commands
         .spawn_bundle(OrthographicCameraBundle::new_2d())
@@ -83,7 +83,7 @@ fn spawn_all(
     player_assets: Res<PlayerAssets>,
     image_assets: Res<Assets<Image>>,
 ) {
-    info!("loading finished, spawing entities");
+    info!("loading finished, spawning entities");
 
     // spawn the camera.
     commands.spawn_bundle(OrthographicCameraBundle::new_2d());

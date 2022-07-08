@@ -32,7 +32,6 @@ pub fn spawn_domain_sys(
 
     // load bg image
     // only image for now. (future: image > animated image > dynamic sfx maybe?)
-    let mut bg_scale_factor = 1.;
 
     // get the first(only) game window (for dimensions).
     // todo: dont use unwrap
@@ -43,8 +42,8 @@ pub fn spawn_domain_sys(
     info!("Got bg size: {:?}", bg_size);
 
     // find bg scale factor
-    // todo: (surely the logic isnt right. fix this later)
-    bg_scale_factor = if win.width() > win.height() {
+    // todo: (surely the logic isn't right. fix this later)
+    let bg_scale_factor = if win.width() > win.height() {
         info!("chose to scale height");
         win.height() / bg_size[1]
     } else {
